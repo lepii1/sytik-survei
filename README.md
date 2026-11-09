@@ -1,0 +1,1 @@
+# sytik-survei
