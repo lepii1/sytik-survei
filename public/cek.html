@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<title>Diagnosa SyTIK</title>
+</head>
+<body style="font:15px/1.6 monospace;padding:24px;max-width:900px">
+<h2>Diagnosa SyTIK</h2>
+<p>Kirim screenshot seluruh halaman ini ke Claude.</p>
+<pre id="o" style="white-space:pre-wrap;background:#f4f4f4;padding:16px"></pre>
+<div id="uji" style="padding:12px;border:1px dashed #999;margin-top:12px">(area uji render)</div>
+
+<script>
+function log(m) { document.getElementById('o').textContent += m + "\n"; }
+log('1. HTML + JavaScript dasar : OK');
+log('   Browser online          : ' + navigator.onLine);
+window.addEventListener('error', function (e) { log('!! ERROR JS: ' + e.message + ' (' + String(e.filename).split('/').pop() + ':' + e.lineno + ')'); });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/react@18.3.1/umd/react.production.min.js"
+  onload="log('2. React dari CDN        : OK')" onerror="log('2. React dari CDN        : GAGAL (CDN diblokir / internet?)')"></script>
+<script src="https://cdn.jsdelivr.net/npm/react-dom@18.3.1/umd/react-dom.production.min.js"
+  onload="log('3. React DOM dari CDN    : OK')" onerror="log('3. React DOM dari CDN    : GAGAL')"></script>
+<script src="https://cdn.jsdelivr.net/npm/htm@3.1.1/dist/htm.umd.js"
+  onload="log('4. htm dari CDN          : OK')" onerror="log('4. htm dari CDN          : GAGAL')"></script>
+
+<script>
+log('5. typeof React / ReactDOM.createRoot / htm : ' + typeof React + ' / ' + (typeof ReactDOM !== 'undefined' ? typeof ReactDOM.createRoot : 'undefined') + ' / ' + typeof htm);
+
+try {
+  var css = function (t) { return Object.fromEntries(t.split(';').filter(function (x) { return x.trim(); }).map(function (r) { var p = r.split(':'); return [p[0].trim(), p.slice(1).join(':').trim()]; })); };
+  var h = htm.bind(function (type, props) {
+    var kids = Array.prototype.slice.call(arguments, 2);
+    if (props && typeof type === 'string') {
+      props = Object.assign({}, props);
+      if (typeof props.style === 'string') props.style = css(props.style);
+      if ('class' in props) { props.className = props.class; delete props.class; }
+    }
+    return React.createElement.apply(null, [type, props].concat(kids));
+  });
+  ReactDOM.createRoot(document.getElementById('uji')).render(
+    h`<div class="x" style="color:green;font-weight:bold">6. Render React + htm : OK (teks hijau ini berasal dari React)</div>`
+  );
+  log('6. Perintah render dijalankan tanpa error (lihat kotak putus-putus di bawah)');
+} catch (e) { log('6. Render GAGAL: ' + e.message); }
+
+fetch('/css/sytik.css').then(function (r) { log('7. /css/sytik.css          : HTTP ' + r.status); }).catch(function (e) { log('7. /css/sytik.css GAGAL: ' + e.message); });
+
+fetch('/').then(function (r) {
+  log('8. Halaman login "/"       : HTTP ' + r.status + (r.redirected ? ' (dialihkan ke ' + r.url + ')' : ''));
+  return r.text();
+}).then(function (t) {
+  log('   Panjang HTML            : ' + t.length + ' karakter');
+  var cek = [['ada <div id="app">', 'id="app"'], ['ada penampil error (__err) = layout BARU', '__err'], ['ada pembungkus style (typeof props.style) = ui BARU', 'typeof props.style'],
+             ['ada Boundary = ui BARU', 'class Boundary'], ['ada data window.__DATA__', 'window.__DATA__ ='], ['ada komponen halaman login (Masuk sebagai)', 'Masuk sebagai']];
+  cek.forEach(function (c) { log('   ' + (t.indexOf(c[1]) > -1 ? '[ada]   ' : '[TIDAK] ') + c[0]); });
+  var m = t.match(/window\.__DATA__ = ([^\n]*);/);
+  log('   __DATA__ (potongan)     : ' + (m ? m[1].slice(0, 160) : 'tidak ditemukan'));
+}).catch(function (e) { log('8. Gagal mengambil "/": ' + e.message); });
+</script>
+</body>
+</html>

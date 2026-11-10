@@ -1,58 +1,121 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+<div align="center">
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+# 🟣 SyTIK — Sistem Survei Kepuasan Prodi Teknik Informatika
 
-## About Laravel
+Portal survei kepuasan **Program Studi Teknik Informatika, Politeknik Negeri Lhokseumawe** dengan 3 role: **Admin, Dosen, Mahasiswa**.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+![Laravel](https://img.shields.io/badge/Laravel-11%2B-FF2D20?logo=laravel&logoColor=white)
+![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=black)
+![PHP](https://img.shields.io/badge/PHP-8.2%2B-777BB4?logo=php&logoColor=white)
+![SQLite](https://img.shields.io/badge/DB-SQLite-003B57?logo=sqlite&logoColor=white)
+![Status](https://img.shields.io/badge/Project-Tugas%20Kampus-5423a5)
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+</div>
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+> Desain dari Figma **SyTIK-FULL** → Laravel + React **tanpa JSX dan tanpa build step**.
+> React dipakai langsung di Blade (`resources/views`) lewat CDN + [htm](https://github.com/developit/htm), jadi **tidak perlu `npm install`**.
 
-## Learning Laravel
+## ✨ Fitur per role
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+| Role | Halaman login | Bisa apa |
+|---|---|---|
+| 🛠️ **Admin** | `/admin/login` | Buat survei & pertanyaan, tentukan target (mahasiswa/dosen/semua), buka/tutup/hapus survei, daftarkan akun mahasiswa/dosen, lihat semua jawaban yang masuk |
+| 👨‍🏫 **Dosen** | `/dosen/login` (NIP + nama) | Mengisi survei yang ditujukan untuk dosen, termasuk pertanyaan **khusus dosen** |
+| 🎓 **Mahasiswa** | `/` (NIM + nama) | Mengisi survei yang ditujukan untuk mahasiswa, termasuk pertanyaan **khusus mahasiswa** |
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+Alur responden: login → dashboard → detail survei → isi formulir → konfirmasi → kirim.
+Setiap pertanyaan punya pengaturan *"ditampilkan untuk"* (semua / khusus mahasiswa / khusus dosen), jadi satu survei bisa berisi pertanyaan berbeda untuk tiap role.
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+## 🧰 Teknologi
 
-## Agentic Development
+Laravel 11+ (auth, session, Eloquent, migration) · React 18 UMD + htm di Blade · SQLite · CSS biasa di `public/css/sytik.css`
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+## 🚀 Cara menjalankan (untuk teman yang clone)
+
+**Syarat:** PHP 8.2+ (ekstensi `sqlite3`/`pdo_sqlite` aktif), [Composer](https://getcomposer.org/), Git, dan internet (React dimuat dari CDN).
 
 ```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+git clone https://github.com/USERNAME/sytik-survei.git
+cd sytik-survei
+composer install
+cp .env.example .env            # Windows CMD: copy .env.example .env
+php artisan key:generate
+touch database/database.sqlite  # Windows CMD: type nul > database\database.sqlite
+php artisan migrate --seed
+php artisan serve
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+Buka **http://127.0.0.1:8000**. Di `.env`, pastikan `DB_CONNECTION=sqlite` dan tambahkan `APP_TIMEZONE=Asia/Jakarta`.
 
-## Contributing
+### 🔑 Cara login
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+| Role | Halaman | Isi | Contoh (dari seeder) |
+|---|---|---|---|
+| Mahasiswa | `/` | **NIM + nama lengkap** | `2321401001` + `Nurul Aisyah` |
+| Dosen | `/dosen/login` | **NIP + nama lengkap** | `198501012010011001` + `Dr. Irwansyah, S.T., M.Eng.` |
+| Admin | `/admin/login` | username + kata sandi | `admin` + `admin12345` |
 
-## Code of Conduct
+Mahasiswa dan dosen **tidak memakai kata sandi**: namanya harus sama dengan yang didaftarkan admin (huruf besar/kecil dan spasi ganda diabaikan). Akun mereka dibuat lewat **Admin → Akun responden**.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+> ⚠️ Login tanpa kata sandi cukup untuk project kampus, tapi siapa pun yang tahu NIM + nama seseorang bisa masuk sebagai dia. Ganti kata sandi admin kalau dipublikasikan.
 
-## Security Vulnerabilities
+## 🗂️ Struktur penting
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+```
+app/Http/Controllers/AuthController.php        # 3 login + logout
+app/Http/Controllers/RespondenController.php   # dashboard, isi, kirim (mahasiswa & dosen)
+app/Http/Controllers/AdminController.php       # survei, akun, lihat jawaban
+app/Http/Middleware/Peran.php                  # pembatas akses per role
+app/Models/{User,Survey,Question,Respon}.php
+database/migrations/                           # tabel users(role), surveys, questions, responses
+database/seeders/DatabaseSeeder.php           # akun & survei contoh
+routes/web.php
+resources/views/layouts/app.blade.php          # shell + CDN React
+resources/views/partials/ui.blade.php          # komponen bersama
+resources/views/login.blade.php                # 3 halaman login
+resources/views/{dashboard,detail,isi,konfirmasi}.blade.php   # responden
+resources/views/admin/{dashboard,buat,jawaban,akun}.blade.php # admin
+```
 
-## License
+## 🛠️ Troubleshooting
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+| Masalah | Solusi |
+|---|---|
+| Halaman hanya "Memuat…" | Cek internet (CDN diblokir?) lalu lihat Console browser |
+| `could not find driver` | Aktifkan `pdo_sqlite` & `sqlite3` di `php.ini` |
+| `No application encryption key` | `php artisan key:generate` |
+| Error 419 / Page Expired | Hapus cookie, lalu `php artisan config:clear` |
+| Login selalu gagal | Pastikan sudah `php artisan migrate --seed`. Nama harus sama dengan data terdaftar, dan tiap role punya halaman login sendiri |
+| Ingin mengulang data | `php artisan migrate:fresh --seed` (semua data terhapus) |
+
+<details>
+<summary><b>👩‍💻 Untuk pemilik repo: membuat repo dari file zip ini</b></summary>
+
+```bash
+composer create-project laravel/laravel sytik-survei
+cd sytik-survei
+```
+
+1. Salin semua isi folder zip ke `sytik-survei`, timpa file yang sama (`routes/web.php`, `app/Models/User.php`, `database/seeders/DatabaseSeeder.php`).
+2. Jalankan langkah `migrate --seed` dan `serve` seperti di atas, lalu uji ketiga role.
+3. Upload ke GitHub:
+
+```bash
+git init
+git add .
+git commit -m "SyTIK: portal survei 3 role"
+git branch -M main
+git remote add origin https://github.com/USERNAME/sytik-survei.git
+git push -u origin main
+```
+
+File `.env` dan `database.sqlite` tidak ikut ter-push (sudah di `.gitignore` bawaan Laravel). Ganti `USERNAME` di README.
+</details>
+
+## 📌 Catatan
+
+- Survei belum bisa **diedit** setelah dibuat (hanya dibuka/ditutup/dihapus). Menu "Panduan pengisian" dan "Bantuan" belum punya halaman.
+- Dibuat untuk tugas kampus, bukan untuk produksi.
+
+---
+<div align="center">Dibuat dengan 💜 untuk Prodi Teknik Informatika · Politeknik Negeri Lhokseumawe</div>
