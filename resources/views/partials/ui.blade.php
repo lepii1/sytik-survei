@@ -35,7 +35,9 @@ const Notice = ({ tone = '', icon = 'i', title, children }) =>
 
 const Nav = ({ user, active }) => h`
   <header class="nav"><div class="nav-in">
-    <a class="logo" href=${user ? (user.peran === 'admin' ? '/admin' : '/dashboard') : '/'}>SyTIK<small>Politeknik Negeri Lhokseumawe</small></a>
+    <a class="logo" href=${user ? (user.peran === 'admin' ? '/admin' : '/dashboard') : '/'}>
+      <img src=${'/images/logo_sytik.svg'} alt="Logo SyTIK" style="height: 34px; width: auto; object-fit: contain; display: block;" />
+    </a>
     <nav class="menu">
       ${!user ? h`<a href="/">Mahasiswa</a><a href="/dosen/login">Dosen</a><a href="/admin/login">Admin</a>`
         : user.peran === 'admin' ? h`<a class=${active === 'dash' ? 'on' : ''} href="/admin">Dasbor</a><a class=${active === 'buat' ? 'on' : ''} href="/admin/survei/buat">Buat survei</a><a class=${active === 'akun' ? 'on' : ''} href="/admin/akun">Akun responden</a>`
