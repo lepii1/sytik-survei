@@ -36,7 +36,7 @@ const Notice = ({ tone = '', icon = 'i', title, children }) =>
 const Nav = ({ user, active }) => h`
   <header class="nav"><div class="nav-in">
     <a class="logo" href=${user ? (user.peran === 'admin' ? '/admin' : '/dashboard') : '/'}>
-      <img src=${'/images/logo_sytik.svg'} alt="Logo SyTIK" style="height: 34px; width: auto; object-fit: contain; display: block;" />
+      <img src=${'/images/logo_sytik.svg'} alt="Logo SyTIK" style="height: 64px; width: auto; object-fit: contain; display: block;" />
     </a>
     <nav class="menu">
       ${!user ? h`<a href="/">Mahasiswa</a><a href="/dosen/login">Dosen</a><a href="/admin/login">Admin</a>`
